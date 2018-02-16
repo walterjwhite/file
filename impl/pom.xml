@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.walterjwhite.modules</groupId>
+		<artifactId>file</artifactId>
+		<version>0.0.15-SNAPSHOT</version>
+	</parent>
+
+	<groupId>com.walterjwhite.modules.file</groupId>
+	<artifactId>impl</artifactId>
+	<version>0.0.15-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>file - impl</name>
+	<description>
+		file impl
+	</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.walterjwhite.modules.file.api</groupId>
+			<artifactId>service</artifactId>
+			<version>0.0.15-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.walterjwhite.modules.compression.api</groupId>
+			<artifactId>service</artifactId>
+			<version>0.0.15-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.walterjwhite.modules.compression.modules</groupId>
+			<artifactId>xz</artifactId>
+			<version>0.0.15-SNAPSHOT</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.walterjwhite.modules.encryption.api</groupId>
+			<artifactId>service</artifactId>
+			<version>0.0.15-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.walterjwhite.modules.encryption</groupId>
+			<artifactId>impl</artifactId>
+			<version>0.0.15-SNAPSHOT</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.walterjwhite.infrastructure.datastore.modules</groupId>
+			<artifactId>google-guice-persist-criteria-builder</artifactId>
+			<version>0.0.15-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.walterjwhite.infrastructure.google-guice</groupId>
+			<artifactId>core</artifactId>
+			<version>0.0.15-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.walterjwhite.infrastructure.dependencies</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>0.0.15-SNAPSHOT</version>
+			<type>pom</type>
+		</dependency>
+		<dependency>
+			<groupId>com.walterjwhite.infrastructure.dependencies</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>0.0.15-SNAPSHOT</version>
+			<type>pom</type>
+		</dependency>
+	</dependencies>
+</project>

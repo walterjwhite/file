@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.walterjwhite.modules.file</groupId>
+        <artifactId>api</artifactId>
+        <version>0.0.15-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.walterjwhite.modules.file.api</groupId>
+    <artifactId>service</artifactId>
+    <packaging>jar</packaging>
+
+    <name>file - API - service</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.walterjwhite.modules.file.api</groupId>
+            <artifactId>model</artifactId>
+            <version>0.0.15-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.walterjwhite.infrastructure.dependencies</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>0.0.15-SNAPSHOT</version>
+            <type>pom</type>
+        </dependency>
+    </dependencies>
+</project>
