@@ -1,12 +1,8 @@
 package com.walterjwhite.file.modules.tailer;
 
 import java.io.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TailFileChangeListener {
-  private static final Logger LOGGER = LoggerFactory.getLogger(TailFileChangeListener.class);
-
   protected final File file;
   protected final FileReader fileReader;
   protected final OutputStream outputStream;

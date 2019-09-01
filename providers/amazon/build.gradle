@@ -1,0 +1,17 @@
+group = 'com.walterjwhite.modules.file.providers'
+description = 'file - providers - amazon'
+dependencies {
+  compile project(':infrastructure:dependencies:amazon-s3')
+  compile project(':infrastructure:datastore:modules:amazon')
+  compile project(':infrastructure:dependencies:commons-io')
+  testCompile project(':infrastructure:datastore:modules:property-test')
+  testCompile project(':infrastructure:dependencies:hikari-jdbc-connection-pool')
+  testCompile project(':infrastructure:dependencies:h2')
+  testCompile project(':infrastructure:dependencies:hibernate')
+  testCompile project(':infrastructure:dependencies:hibernate-hikari')
+  testCompile project(':infrastructure:dependencies:p6spy')
+  testCompile project(':infrastructure:datastore:modules:default')
+  testCompile project(':infrastructure:datastore:modules:environment')
+  testCompile project(':infrastructure:datastore:modules:properties')
+  testCompile project(':infrastructure:datastore:modules:file')
+}

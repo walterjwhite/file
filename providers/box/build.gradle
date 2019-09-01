@@ -1,0 +1,12 @@
+group = 'com.walterjwhite.modules.file.providers'
+description = 'file - providers - box'
+dependencies {
+  compile project(':infrastructure:dependencies:box')
+  compile project(':infrastructure:dependencies:commons-io')
+  compile project(':infrastructure:datastore:modules:property-test')
+  testCompile project(':infrastructure:dependencies:hikari-jdbc-connection-pool')
+  testCompile project(':infrastructure:dependencies:h2')
+  testCompile project(':infrastructure:dependencies:hibernate')
+  testCompile project(':infrastructure:dependencies:hibernate-hikari')
+  testCompile project(':infrastructure:dependencies:p6spy')
+}

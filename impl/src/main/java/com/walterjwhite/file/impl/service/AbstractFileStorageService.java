@@ -1,27 +1,22 @@
 package com.walterjwhite.file.impl.service;
 
-import com.google.inject.persist.Transactional;
-import com.walterjwhite.datastore.criteria.Repository;
+import com.walterjwhite.datastore.api.repository.Repository;
 import com.walterjwhite.encryption.api.service.CompressionService;
-import com.walterjwhite.encryption.api.service.DigestService;
-import com.walterjwhite.encryption.api.service.EncryptionService;
+import com.walterjwhite.encryption.service.DigestService;
+import com.walterjwhite.encryption.service.EncryptionService;
 import com.walterjwhite.file.api.model.File;
 import com.walterjwhite.file.api.service.FileStorageService;
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
-import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javax.inject.Provider;
+import javax.transaction.Transactional;
+import org.apache.commons.compress.utils.IOUtils;
 
 public abstract class AbstractFileStorageService implements FileStorageService {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFileStorageService.class);
-
   protected final CompressionService compressionService;
   protected final EncryptionService encryptionService;
   protected final DigestService digestService;
-  protected final Repository repository;
+  protected final Provider<Repository> repositoryProvider;
 
   protected final boolean nop;
   protected final boolean debug;
@@ -30,54 +25,63 @@ public abstract class AbstractFileStorageService implements FileStorageService {
       CompressionService compressionService,
       EncryptionService encryptionService,
       DigestService digestService,
-      Repository repository,
+      Provider<Repository> repositoryProvider,
       boolean nop,
       boolean debug) {
     super();
     this.compressionService = compressionService;
     this.encryptionService = encryptionService;
     this.digestService = digestService;
-    this.repository = repository;
+    this.repositoryProvider = repositoryProvider;
     this.nop = nop;
     this.debug = debug;
   }
 
   @Transactional
   @Override
-  public void put(File file)
-      throws IOException, InvalidAlgorithmParameterException, InvalidKeyException,
-          NoSuchAlgorithmException {
+  public File put(File file) throws IOException, NoSuchAlgorithmException {
     final java.io.File sourceFile = new java.io.File(file.getSource());
     final String digest = digestService.compute(sourceFile);
     file.setChecksum(digest);
-    repository.persist(file);
 
-    final java.io.File replacedFile;
-    if (!debug) {
-      replacedFile = compressAndEncrypt(file, sourceFile);
-    } else {
-      replacedFile = null;
+    try {
+      return repositoryProvider.get().query(new FindFileByChecksumQuery(file.getChecksum()));
+    } catch (RuntimeException e /*PersistenceException*/) {
+      repositoryProvider.get().create(file);
+
+      final java.io.File replacedFile;
+      if (!debug) {
+        replacedFile = compressAndEncrypt(file, sourceFile);
+      } else {
+        replacedFile = null;
+      }
+
+      doPut(file);
+
+      if (replacedFile != null) replacedFile.delete();
+
+      return file;
     }
-
-    doPut(file);
-
-    if (replacedFile != null) replacedFile.delete();
   }
 
   protected java.io.File compressAndEncrypt(File file, final java.io.File sourceFile)
-      throws IOException, InvalidAlgorithmParameterException, InvalidKeyException {
-    // do not read file into memory, this is inefficient
-    final byte[] compressedData =
-        compressionService.compress(FileUtils.readFileToByteArray(sourceFile));
-    final byte[] encryptedData = encryptionService.encrypt(compressedData);
-
+      throws IOException {
     final java.io.File compressedAndEncryptedFile = java.io.File.createTempFile("encrypted", "xz");
-    FileUtils.writeByteArrayToFile(compressedAndEncryptedFile, encryptedData);
-    file.setSource(compressedAndEncryptedFile.getAbsolutePath());
 
-    sourceFile.delete();
+    try (final InputStream inputStream = new FileInputStream(sourceFile)) {
+      try (final OutputStream outputStream =
+          compressionService.getCompressionStream(
+              encryptionService.getEncryptionStream(
+                  new FileOutputStream(compressedAndEncryptedFile)))) {
+        IOUtils.copy(inputStream, outputStream);
+        outputStream.flush();
+        file.setSource(compressedAndEncryptedFile.getAbsolutePath());
 
-    return (compressedAndEncryptedFile);
+        sourceFile.delete();
+
+        return (compressedAndEncryptedFile);
+      }
+    }
   }
 
   protected abstract void doPut(File file) throws IOException;
@@ -85,8 +89,7 @@ public abstract class AbstractFileStorageService implements FileStorageService {
   @Override
   public File put(java.io.File file) throws Exception {
     File wFile = new File(file.getAbsolutePath());
-    put(wFile);
-    return (wFile);
+    return put(wFile);
   }
 
   @Override
@@ -96,15 +99,20 @@ public abstract class AbstractFileStorageService implements FileStorageService {
     final java.io.File sourceFile = new java.io.File(file.getSource());
 
     if (!debug) {
-      final byte[] decryptedData =
-          encryptionService.decrypt(FileUtils.readFileToByteArray(sourceFile));
-      final byte[] decompressedData = compressionService.decompress(decryptedData);
-
       final java.io.File decryptedAndDecompressedFile =
           java.io.File.createTempFile("decrypted", "xz");
-      FileUtils.writeByteArrayToFile(decryptedAndDecompressedFile, decompressedData);
-      file.setSource(decryptedAndDecompressedFile.getAbsolutePath());
-      sourceFile.delete();
+
+      try (final InputStream inputStream =
+          compressionService.getDecompressionStream(
+              encryptionService.getDecryptionStream(new FileInputStream(sourceFile)))) {
+        try (final OutputStream outputStream = new FileOutputStream(decryptedAndDecompressedFile)) {
+          IOUtils.copy(inputStream, outputStream);
+
+          outputStream.flush();
+          file.setSource(decryptedAndDecompressedFile.getAbsolutePath());
+          sourceFile.delete();
+        }
+      }
     }
   }
 

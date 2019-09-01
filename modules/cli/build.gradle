@@ -1,0 +1,16 @@
+group = 'com.walterjwhite.modules.file.modules'
+description = 'file - modules - cli'
+dependencies {
+  compile project(':infrastructure:datastore:modules:browser:impl:core')
+  compile project(':infrastructure:datastore:modules:browser:plugins:file-transfer')
+  compile project(':infrastructure:datastore:modules:browser:plugins:heartbeat')
+  compile project(':infrastructure:datastore:modules:browser:plugins:shell')
+  compile project(':infrastructure:datastore:modules:browser:plugins:ssh')
+  compile project(':infrastructure:datastore:modules:ip:impl')
+  compile project(':infrastructure:datastore:modules:queue:impl')
+  compile project(':infrastructure:datastore:modules:download:providers:local')
+  compile project(':infrastructure:datastore:modules:download:providers:amazon')
+  compile project(':infrastructure:datastore:modules:download:providers:amazon-sqs')
+  compile project(':infrastructure:dependencies:h2')
+  runtime project(':infrastructure:dependencies:p6spy')
+}

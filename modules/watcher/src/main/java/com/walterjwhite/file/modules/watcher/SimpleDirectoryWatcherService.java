@@ -4,15 +4,12 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A simple class which can monitor files and notify interested parties (i.e. listeners) of file
@@ -21,8 +18,6 @@ import org.slf4j.LoggerFactory;
  * <p>This class is kept lean by only keeping methods that are actually being called.
  */
 public class SimpleDirectoryWatcherService implements DirectoryWatcherService, Runnable {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDirectoryWatcherService.class);
   private final WatchService mWatchService;
   private final AtomicBoolean mIsRunning;
   private final ConcurrentMap<WatchKey, Path> mWatchKeyToDirPathMap;
@@ -86,8 +81,7 @@ public class SimpleDirectoryWatcherService implements DirectoryWatcherService, R
   }
 
   private Set<OnFileChangeListener> matchedListeners(Path dir, Path file) {
-    return getListeners(dir)
-        .stream()
+    return getListeners(dir).stream()
         .filter(listener -> matchesAny(file, getPatterns(listener)))
         .collect(Collectors.toSet());
   }
@@ -150,13 +144,6 @@ public class SimpleDirectoryWatcherService implements DirectoryWatcherService, R
     }
 
     mListenerToFilePatternsMap.put(listener, patterns);
-
-    LOGGER.info(
-        "Watching files matching "
-            + Arrays.toString(globPatterns)
-            + " under "
-            + dirPath
-            + " for changes.");
   }
 
   /**
@@ -166,7 +153,6 @@ public class SimpleDirectoryWatcherService implements DirectoryWatcherService, R
    */
   @Override
   public void start() {
-    LOGGER.debug("starting directory watcher:");
     if (mIsRunning.compareAndSet(false, true)) {
       Thread runnerThread = new Thread(this, DirectoryWatcherService.class.getSimpleName());
       runnerThread.start();
@@ -181,44 +167,47 @@ public class SimpleDirectoryWatcherService implements DirectoryWatcherService, R
    */
   @Override
   public void stop() {
-    LOGGER.debug("stopping directory watcher:");
-
-    // Kill thread lazily
     mIsRunning.set(false);
   }
 
   /** {@inheritDoc} */
   @Override
   public void run() {
-    LOGGER.info("Starting file watcher service.");
+    while (mIsRunning.get() && doRunIteration()) {}
 
-    while (mIsRunning.get()) {
-      WatchKey key;
-      try {
-        key = mWatchService.take();
-      } catch (InterruptedException e) {
-        LOGGER.info(DirectoryWatcherService.class.getSimpleName() + " service interrupted.");
-        break;
-      }
+    stop();
+  }
 
-      if (null == getDirPath(key)) {
-        LOGGER.error("Watch key not recognized.");
-        continue;
-      }
+  protected boolean doRunIteration() {
+    WatchKey key;
+    try {
+      key = mWatchService.take();
+    } catch (InterruptedException e) {
+      return false;
+    }
 
-      notifyListeners(key);
+    if (!isWatchKeyRecognized(key)) {
+      return true;
+    }
 
-      // Reset key to allow further events for this key to be processed.
-      boolean valid = key.reset();
-      if (!valid) {
-        mWatchKeyToDirPathMap.remove(key);
-        if (mWatchKeyToDirPathMap.isEmpty()) {
-          break;
-        }
+    notifyListeners(key);
+    return resetKey(key);
+  }
+
+  protected boolean resetKey(WatchKey watchKey) {
+    // Reset key to allow further events for this key to be processed.
+    boolean valid = watchKey.reset();
+    if (!valid) {
+      mWatchKeyToDirPathMap.remove(watchKey);
+      if (mWatchKeyToDirPathMap.isEmpty()) {
+        return false;
       }
     }
 
-    mIsRunning.set(false);
-    LOGGER.info("Stopping file watcher service.");
+    return true;
+  }
+
+  protected boolean isWatchKeyRecognized(final WatchKey watchKey) {
+    return getDirPath(watchKey) != null;
   }
 }

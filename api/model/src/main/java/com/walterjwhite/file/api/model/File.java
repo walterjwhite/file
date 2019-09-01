@@ -2,24 +2,33 @@ package com.walterjwhite.file.api.model;
 
 import com.walterjwhite.datastore.api.model.entity.AbstractEntity;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
+@Data
+@ToString(doNotUseGetters = true)
+// @PersistenceCapable
+@NoArgsConstructor
 @Entity
 public class File extends AbstractEntity {
   /** where this file exists (before writing to provider or after reading from provider). */
-  protected transient String source;
+  @EqualsAndHashCode.Exclude /*@NotPersistent*/ @Transient protected transient String source;
 
   /** Used as the unique identifier for the file */
   @Column(unique = true, nullable = false, updatable = false)
   protected String checksum;
 
+  @EqualsAndHashCode.Exclude
   @Column(nullable = false, updatable = false)
   protected LocalDateTime createdDateTime = LocalDateTime.now();
 
-  @Column protected String name;
-  @Column protected String extension;
+  @EqualsAndHashCode.Exclude @Column protected String name;
+  @EqualsAndHashCode.Exclude @Column protected String extension;
 
   /** TODO: automatically purge files * */
   // retention policy
@@ -36,60 +45,19 @@ public class File extends AbstractEntity {
     this.source = source;
   }
 
-  public File() {
-    super();
-  }
+  /**
+   * Splits the filename into the name and extension
+   *
+   * @param filename the actual filename (without path)
+   * @return this file reference
+   */
+  public File withFilename(final String filename) {
+    final int index = filename.lastIndexOf(".");
+    if (index > 0) {
+      name = filename.substring(0, index);
+      extension = filename.substring(index + 1);
+    }
 
-  public String getSource() {
-    return source;
-  }
-
-  public void setSource(String source) {
-    this.source = source;
-  }
-
-  public String getChecksum() {
-    return checksum;
-  }
-
-  public void setChecksum(String checksum) {
-    this.checksum = checksum;
-  }
-
-  public LocalDateTime getCreatedDateTime() {
-    return createdDateTime;
-  }
-
-  public void setCreatedDateTime(LocalDateTime createdDateTime) {
-    this.createdDateTime = createdDateTime;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getExtension() {
-    return extension;
-  }
-
-  public void setExtension(String extension) {
-    this.extension = extension;
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    File file = (File) o;
-    return Objects.equals(checksum, file.checksum);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(checksum);
+    return this;
   }
 }

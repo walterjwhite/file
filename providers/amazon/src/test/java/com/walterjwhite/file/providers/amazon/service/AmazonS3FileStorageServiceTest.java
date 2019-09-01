@@ -1,45 +1,38 @@
 package com.walterjwhite.file.providers.amazon.service;
 
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.google.inject.persist.jpa.JpaPersistModule;
-import com.walterjwhite.compression.modules.CompressionModule;
-import com.walterjwhite.datastore.GoogleGuicePersistModule;
-import com.walterjwhite.datastore.criteria.CriteriaBuilderModule;
-import com.walterjwhite.encryption.impl.EncryptionModule;
 import com.walterjwhite.file.api.service.FileStorageService;
 import com.walterjwhite.google.guice.GuiceHelper;
-import com.walterjwhite.google.guice.property.test.GuiceTestModule;
 import java.io.File;
 import java.io.FileOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.reflections.Reflections;
+import org.reflections.scanners.FieldAnnotationsScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 
 public class AmazonS3FileStorageServiceTest {
-  private static final Logger LOGGER =
-      LoggerFactory.getLogger(AmazonS3FileStorageServiceTest.class);
-
   protected FileStorageService fileStorageService;
 
   /**
    * AWS configuration must be done via properties, command-line, or finally from the environment
    */
   @Before
-  public void onBefore() throws Exception {
-    // TODO: configure JPA unit, do not hard-code
+  public void onBefore() {
     GuiceHelper.addModules(
-        new AmazonS3FileStorageModule(),
-        new GuiceTestModule(),
-        new CriteriaBuilderModule(),
-        new GoogleGuicePersistModule(),
-        new JpaPersistModule("defaultJPAUnit"),
-        new CompressionModule(),
-        new EncryptionModule());
+        new AmazonS3TestModule(
+            getClass(),
+            new Reflections(
+                "com.walterjwhite",
+                TypeAnnotationsScanner.class,
+                SubTypesScanner.class,
+                FieldAnnotationsScanner.class)));
     GuiceHelper.setup();
 
-    fileStorageService = GuiceHelper.getGuiceInjector().getInstance(FileStorageService.class);
+    fileStorageService =
+        GuiceHelper.getGuiceApplicationInjector().getInstance(FileStorageService.class);
   }
 
   private static void set(final String key, final String value) {

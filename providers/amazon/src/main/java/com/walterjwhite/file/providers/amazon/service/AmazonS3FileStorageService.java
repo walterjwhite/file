@@ -8,20 +8,21 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.PutObjectResult;
 import com.amazonaws.services.s3.model.S3Object;
 import com.walterjwhite.amazon.property.AmazonRegion;
-import com.walterjwhite.datastore.criteria.Repository;
+import com.walterjwhite.datastore.api.repository.Repository;
 import com.walterjwhite.encryption.api.service.CompressionService;
-import com.walterjwhite.encryption.api.service.DigestService;
-import com.walterjwhite.encryption.api.service.EncryptionService;
+import com.walterjwhite.encryption.service.DigestService;
+import com.walterjwhite.encryption.service.EncryptionService;
 import com.walterjwhite.file.api.model.File;
 import com.walterjwhite.file.impl.service.AbstractFileStorageService;
-import com.walterjwhite.google.guice.property.enumeration.Debug;
-import com.walterjwhite.google.guice.property.enumeration.NoOperation;
-import com.walterjwhite.google.guice.property.enumeration.ProxyType;
-import com.walterjwhite.google.guice.property.property.Property;
-import com.walterjwhite.google.guice.property.property.ProxyHost;
-import com.walterjwhite.google.guice.property.property.ProxyPort;
+import com.walterjwhite.property.api.enumeration.Debug;
+import com.walterjwhite.property.api.enumeration.NoOperation;
+import com.walterjwhite.property.api.property.ProxyHost;
+import com.walterjwhite.property.api.property.ProxyPort;
+import com.walterjwhite.property.api.property.ProxyType;
+import com.walterjwhite.property.impl.annotation.Property;
 import java.io.FileOutputStream;
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 public class AmazonS3FileStorageService extends AbstractFileStorageService {
   // TODO: I think this should be a bit more flexible
@@ -34,31 +35,39 @@ public class AmazonS3FileStorageService extends AbstractFileStorageService {
       CompressionService compressionService,
       EncryptionService encryptionService,
       DigestService digestService,
-      Repository repository,
+      Provider<Repository> repositoryProvider,
       @Property(NoOperation.class) boolean nop,
       @Property(Debug.class) boolean debug,
-      @Property(com.walterjwhite.google.guice.property.property.ProxyType.class)
-          ProxyType proxyType,
+      @Property(ProxyType.class) com.walterjwhite.property.api.enumeration.ProxyType proxyType,
       @Property(ProxyHost.class) String proxyHost,
       @Property(ProxyPort.class) int proxyPort,
       @Property(AmazonS3Bucket.class) String bucketName,
       @Property(AmazonRegion.class) Regions region) {
 
-    super(compressionService, encryptionService, digestService, repository, nop, debug);
+    super(compressionService, encryptionService, digestService, repositoryProvider, nop, debug);
     this.bucketName = bucketName;
 
     ClientConfiguration clientConfiguration = new ClientConfiguration();
 
-    if (ProxyType.HTTP.equals(proxyType)) clientConfiguration.setProtocol(Protocol.HTTP);
-
-    clientConfiguration.setProxyHost(proxyHost);
-    clientConfiguration.setProxyPort(proxyPort);
+    setupProxy(clientConfiguration, proxyType, proxyHost, proxyPort);
 
     s3client =
         AmazonS3ClientBuilder.standard()
             .withRegion(region)
             .withClientConfiguration(clientConfiguration)
             .build();
+  }
+
+  protected void setupProxy(
+      ClientConfiguration clientConfiguration,
+      com.walterjwhite.property.api.enumeration.ProxyType proxyType,
+      String proxyHost,
+      int proxyPort) {
+    if (com.walterjwhite.property.api.enumeration.ProxyType.HTTP.equals(proxyType))
+      clientConfiguration.setProtocol(Protocol.HTTP);
+
+    clientConfiguration.setProxyHost(proxyHost);
+    clientConfiguration.setProxyPort(proxyPort);
   }
 
   //  protected void createBucket(final String bucketName) {
@@ -72,7 +81,7 @@ public class AmazonS3FileStorageService extends AbstractFileStorageService {
   @Override
   protected void doPut(File file) {
     //    createBucket(bucketName);
-    doAmazonPut(bucketName, file.getId(), file.getSource());
+    doAmazonPut(bucketName, file.getChecksum() /*.getId()*/, file.getSource());
   }
 
   protected PutObjectResult doAmazonPut(
@@ -90,7 +99,8 @@ public class AmazonS3FileStorageService extends AbstractFileStorageService {
   public void doGet(File file) throws Exception {
     final S3Object s3Object = getS3Object(file);
 
-    final java.io.File outputFile = java.io.File.createTempFile(file.getId(), "s3");
+    final java.io.File outputFile =
+        java.io.File.createTempFile(file.getChecksum() /*.getId()*/, "s3");
 
     try (final FileOutputStream fos = new FileOutputStream(outputFile)) {
       int read;
@@ -103,11 +113,11 @@ public class AmazonS3FileStorageService extends AbstractFileStorageService {
   }
 
   protected S3Object getS3Object(File file) {
-    return s3client.getObject(bucketName, file.getId());
+    return s3client.getObject(bucketName, file.getChecksum() /*.getId()*/);
   }
 
   @Override
   public void delete(File file) {
-    s3client.deleteObject(bucketName, file.getId());
+    s3client.deleteObject(bucketName, file.getChecksum() /*.getId()*/);
   }
 }

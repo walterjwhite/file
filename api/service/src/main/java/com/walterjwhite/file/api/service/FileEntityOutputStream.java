@@ -1,17 +1,10 @@
 package com.walterjwhite.file.api.service;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.*;
 
 public class FileEntityOutputStream extends OutputStream {
-  private static final Logger LOGGER = LoggerFactory.getLogger(FileEntityOutputStream.class);
-
   protected final File tempFile;
-  protected final FileOutputStream outputStream;
+  protected final OutputStream outputStream;
 
   protected final FileStorageService fileStorageService;
 
@@ -22,7 +15,7 @@ public class FileEntityOutputStream extends OutputStream {
 
     this.fileStorageService = fileStorageService;
     tempFile = File.createTempFile("temp", "tmp");
-    outputStream = new FileOutputStream(tempFile);
+    outputStream = new BufferedOutputStream(new FileOutputStream(tempFile));
   }
 
   @Override
@@ -37,6 +30,7 @@ public class FileEntityOutputStream extends OutputStream {
 
   @Override
   public void close() throws IOException {
+    flush();
     outputStream.close();
   }
 
@@ -47,19 +41,21 @@ public class FileEntityOutputStream extends OutputStream {
 
   @Override
   public void flush() throws IOException {
-    LOGGER.info("flushing file entity output stream:" + tempFile.getAbsolutePath());
+    if (!wasAlreadyFlushed()) doFlush();
+  }
 
-    if (file != null) {
-      LOGGER.warn("already flushed, ignoring.");
-      return;
-    }
+  protected boolean wasAlreadyFlushed() {
+    return file != null;
+  }
 
+  protected void doFlush() throws IOException {
     outputStream.flush();
 
     try {
       file = fileStorageService.put(tempFile);
+      tempFile.delete();
     } catch (Exception e) {
-      LOGGER.error("error putting file", e);
+      throw new IOException("Error putting file", e);
     }
   }
 

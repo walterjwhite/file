@@ -1,5 +1,7 @@
 package com.walterjwhite.file.providers.google.service.property;
 
-import com.walterjwhite.google.guice.property.property.GuiceProperty;
+import com.walterjwhite.logging.annotation.Sensitive;
+import com.walterjwhite.property.api.property.ConfigurableProperty;
 
-public interface GoogleCloudBucket extends GuiceProperty {}
+@Sensitive
+public interface GoogleCloudBucket extends ConfigurableProperty {}

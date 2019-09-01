@@ -1,16 +1,17 @@
 package com.walterjwhite.file.providers.box.service;
 
-import com.walterjwhite.datastore.criteria.Repository;
+import com.walterjwhite.datastore.api.repository.Repository;
 import com.walterjwhite.encryption.api.service.CompressionService;
-import com.walterjwhite.encryption.api.service.DigestService;
-import com.walterjwhite.encryption.api.service.EncryptionService;
+import com.walterjwhite.encryption.service.DigestService;
+import com.walterjwhite.encryption.service.EncryptionService;
 import com.walterjwhite.file.api.model.File;
 import com.walterjwhite.file.impl.service.AbstractFileStorageService;
-import com.walterjwhite.google.guice.property.enumeration.Debug;
-import com.walterjwhite.google.guice.property.enumeration.NoOperation;
-import com.walterjwhite.google.guice.property.property.Property;
+import com.walterjwhite.property.api.enumeration.Debug;
+import com.walterjwhite.property.api.enumeration.NoOperation;
+import com.walterjwhite.property.impl.annotation.Property;
 import java.io.IOException;
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 public class BoxFileStorageService extends AbstractFileStorageService {
   @Inject
@@ -18,10 +19,10 @@ public class BoxFileStorageService extends AbstractFileStorageService {
       CompressionService compressionService,
       EncryptionService encryptionService,
       DigestService digestService,
-      Repository repository,
+      Provider<Repository> repositoryProvider,
       @Property(NoOperation.class) boolean nop,
       @Property(Debug.class) boolean debug) {
-    super(compressionService, encryptionService, digestService, repository, nop, debug);
+    super(compressionService, encryptionService, digestService, repositoryProvider, nop, debug);
   }
 
   @Override

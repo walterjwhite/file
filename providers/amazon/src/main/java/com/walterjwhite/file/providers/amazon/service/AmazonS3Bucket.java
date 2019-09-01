@@ -1,5 +1,7 @@
 package com.walterjwhite.file.providers.amazon.service;
 
-import com.walterjwhite.google.guice.property.property.GuiceProperty;
+import com.walterjwhite.logging.annotation.Sensitive;
+import com.walterjwhite.property.api.property.ConfigurableProperty;
 
-public interface AmazonS3Bucket extends GuiceProperty {}
+@Sensitive
+public interface AmazonS3Bucket extends ConfigurableProperty {}

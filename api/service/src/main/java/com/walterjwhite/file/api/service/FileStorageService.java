@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 
 public interface FileStorageService {
   /** Write (upload) file to storage provider. */
-  void put(File file)
+  File put(File file)
       throws IOException, InvalidAlgorithmParameterException, InvalidKeyException,
           NoSuchAlgorithmException;
 
