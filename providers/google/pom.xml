@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.walterjwhite.java.modules.file</groupId>
     <artifactId>providers</artifactId>
-    <version>0.0.15-SNAPSHOT</version>
+    <version>0.0.17-SNAPSHOT</version>
   </parent>
   <groupId>com.walterjwhite.java.modules.file.providers</groupId>
   <artifactId>google</artifactId>
@@ -14,13 +14,13 @@
     <dependency>
       <groupId>com.walterjwhite.java.dependencies</groupId>
       <artifactId>google-cloud-storage</artifactId>
-      <version>0.0.15-SNAPSHOT</version>
+      <version>0.0.17-SNAPSHOT</version>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>com.walterjwhite.java.modules</groupId>
       <artifactId>google</artifactId>
-      <version>0.0.15-SNAPSHOT</version>
+      <version>0.0.17-SNAPSHOT</version>
     </dependency>
     <!--<dependency>-->
     <!--<groupId>com.walterjwhite.java</groupId>-->
@@ -30,7 +30,7 @@
     <dependency>
       <groupId>com.walterjwhite.java.dependencies</groupId>
       <artifactId>commons-io</artifactId>
-      <version>0.0.15-SNAPSHOT</version>
+      <version>0.0.17-SNAPSHOT</version>
       <type>pom</type>
     </dependency>
     <!--<dependency>-->
@@ -42,31 +42,31 @@
     <dependency>
       <groupId>com.walterjwhite.java.dependencies</groupId>
       <artifactId>h2</artifactId>
-      <version>0.0.15-SNAPSHOT</version>
+      <version>0.0.17-SNAPSHOT</version>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>com.walterjwhite.java.dependencies</groupId>
       <artifactId>postgresql</artifactId>
-      <version>0.0.15-SNAPSHOT</version>
+      <version>0.0.17-SNAPSHOT</version>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>com.walterjwhite.java.dependencies</groupId>
       <artifactId>p6spy</artifactId>
-      <version>0.0.15-SNAPSHOT</version>
+      <version>0.0.17-SNAPSHOT</version>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>com.walterjwhite.java.dependencies</groupId>
       <artifactId>hikari-jdbc-connection-pool</artifactId>
-      <version>0.0.15-SNAPSHOT</version>
+      <version>0.0.17-SNAPSHOT</version>
       <type>pom</type>
     </dependency>
     <dependency>
       <groupId>com.walterjwhite.java.dependencies</groupId>
       <artifactId>hibernate-hikari</artifactId>
-      <version>0.0.15-SNAPSHOT</version>
+      <version>0.0.17-SNAPSHOT</version>
       <type>pom</type>
     </dependency>
   </dependencies>

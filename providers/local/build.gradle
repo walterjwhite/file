@@ -1,0 +1,6 @@
+group = 'com.walterjwhite.modules.file.providers'
+description = 'file - providers - local'
+dependencies {
+  compile project(':infrastructure:datastore:modules:watcher')
+  compile project(':infrastructure:dependencies:commons-io')
+}

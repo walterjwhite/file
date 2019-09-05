@@ -1,16 +1,28 @@
 package com.walterjwhite.file.providers.box.service;
 
 import com.box.sdk.BoxAPIConnection;
+import com.walterjwhite.file.providers.box.service.property.BoxClientId;
+import com.walterjwhite.file.providers.box.service.property.BoxClientSecret;
+import com.walterjwhite.file.providers.box.service.property.BoxDeveloperToken;
+import com.walterjwhite.property.impl.annotation.Property;
 import javax.inject.Provider;
 
 public class BoxAPIConnectionProvider implements Provider<BoxAPIConnection> {
-  // TODO: configure this via properties
-  protected final String DEVELOPER_TOKEN = "Ztxxp3gszZygFK3XcmFmbuFDBi1Rl4kn";
-  protected final String CLIENT_ID = "9j5yl4gzuau24q72ejhse7o8s8ygm92k";
-  protected final String CLIENT_SECRET = "zaQle5NPaGHPyIistg9zeUmI6iCtEVyC";
+  protected final String clientId;
+  protected final String clientSecret;
+  protected final String developerToken;
+
+  public BoxAPIConnectionProvider(
+      @Property(BoxClientId.class) final String clientId,
+      @Property(BoxClientSecret.class) final String clientSecret,
+      @Property(BoxDeveloperToken.class) final String developerToken) {
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
+    this.developerToken = developerToken;
+  }
 
   @Override
   public BoxAPIConnection get() {
-    return new BoxAPIConnection(CLIENT_ID, CLIENT_SECRET, "YOUR-AUTH-CODE");
+    return new BoxAPIConnection(clientId, clientSecret, "YOUR-AUTH-CODE");
   }
 }

@@ -1,0 +1,2 @@
+driverlist = org.postgresql.Driver
+logfile = spy.log

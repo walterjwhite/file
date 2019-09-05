@@ -14,6 +14,7 @@ import com.walterjwhite.encryption.service.DigestService;
 import com.walterjwhite.encryption.service.EncryptionService;
 import com.walterjwhite.file.api.model.File;
 import com.walterjwhite.file.impl.service.AbstractFileStorageService;
+import com.walterjwhite.file.providers.amazon.property.AmazonS3Bucket;
 import com.walterjwhite.property.api.enumeration.Debug;
 import com.walterjwhite.property.api.enumeration.NoOperation;
 import com.walterjwhite.property.api.property.ProxyHost;

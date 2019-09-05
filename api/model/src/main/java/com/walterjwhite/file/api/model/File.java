@@ -30,7 +30,7 @@ public class File extends AbstractEntity {
   @EqualsAndHashCode.Exclude @Column protected String name;
   @EqualsAndHashCode.Exclude @Column protected String extension;
 
-  /** TODO: automatically purge files * */
+  // TODO: automatically purge files
   // retention policy
   // date created
 
@@ -45,12 +45,7 @@ public class File extends AbstractEntity {
     this.source = source;
   }
 
-  /**
-   * Splits the filename into the name and extension
-   *
-   * @param filename the actual filename (without path)
-   * @return this file reference
-   */
+  // Splits the filename into the name and extension
   public File withFilename(final String filename) {
     final int index = filename.lastIndexOf(".");
     if (index > 0) {
