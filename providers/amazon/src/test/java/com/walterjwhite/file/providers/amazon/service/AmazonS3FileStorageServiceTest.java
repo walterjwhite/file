@@ -55,7 +55,7 @@ public class AmazonS3FileStorageServiceTest {
       fileStorageService.get(f);
 
       final File rereadSource = new File(f.getSource());
-      if (!rereadSource.exists()) throw (new IllegalStateException("file should exist."));
+      if (!rereadSource.exists()) throw new IllegalStateException("file should exist.");
     } catch (AmazonS3Exception e) {
       LOGGER.error("error", e);
       for (final String key : e.getAdditionalDetails().keySet()) {

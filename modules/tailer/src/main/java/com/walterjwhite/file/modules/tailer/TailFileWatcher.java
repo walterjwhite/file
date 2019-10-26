@@ -37,10 +37,10 @@ public class TailFileWatcher implements Runnable {
         }
 
         if (!watchKey.reset()) {
-          throw (new IllegalStateException("Unable to continue monitoring file"));
+          throw new IllegalStateException("Unable to continue monitoring file");
         }
       } catch (InterruptedException e) {
-        throw (new RuntimeException("Error watching file for changes", e));
+        throw new RuntimeException("Error watching file for changes", e);
       }
     }
   }

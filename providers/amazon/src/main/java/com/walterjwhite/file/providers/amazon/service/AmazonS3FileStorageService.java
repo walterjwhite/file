@@ -92,7 +92,7 @@ public class AmazonS3FileStorageService extends AbstractFileStorageService {
     // I believe the below code only works if we enable versioning
     //    if (putObjectResult.getVersionId() == null || putObjectResult.getVersionId().length() ==
     // 0) {
-    //      throw (new RuntimeException("Upload failed."));
+    //      throw new RuntimeException("Upload failed.");
     //    }
   }
 

@@ -69,7 +69,7 @@ public class LocalFileStorageService extends AbstractFileStorageService {
           (FileDBEntry) repository.query(new FindFileByChecksumQuery(file.getChecksum()));
       repository.delete(fileDBEntry);
     } catch (Exception e) {
-      throw (new RuntimeException("Error deleting message", e));
+      throw new RuntimeException("Error deleting message", e);
     }
   }
 }

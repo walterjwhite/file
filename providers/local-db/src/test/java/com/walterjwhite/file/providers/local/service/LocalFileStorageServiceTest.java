@@ -35,7 +35,7 @@ public class LocalFileStorageServiceTest {
       fileStorageService.get(f);
 
       final java.io.File rereadSource = new java.io.File(f.getSource());
-      if (!rereadSource.exists()) throw (new IllegalStateException("file should exist."));
+      if (!rereadSource.exists()) throw new IllegalStateException("file should exist.");
     } catch (Exception e) {
       LOGGER.warn("error", e);
     }

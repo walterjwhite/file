@@ -19,11 +19,10 @@ public class TarDirectoryCopierService implements DirectoryCopierService {
     try {
       returnCode = tarCp.waitFor();
       if (returnCode > 0) {
-        throw (new IllegalStateException(
-            "Error copying files, non-zero return-code:" + returnCode));
+        throw new IllegalStateException("Error copying files, non-zero return-code:" + returnCode);
       }
     } catch (InterruptedException e) {
-      throw (new RuntimeException("Error waiting for result"));
+      throw new RuntimeException("Error waiting for result");
     }
 
     // tarXp.waitFor();

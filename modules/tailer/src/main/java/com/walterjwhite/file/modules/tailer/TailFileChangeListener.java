@@ -25,7 +25,7 @@ public class TailFileChangeListener {
         outputStream.write(fileReader.read());
       }
     } catch (IOException e) {
-      throw (new RuntimeException("Error reading file", e));
+      throw new RuntimeException("Error reading file", e);
     }
   }
 }

@@ -86,7 +86,7 @@ public class LocalFileStorageService extends AbstractFileStorageService {
     try {
       getFile(file).delete();
     } catch (Exception e) {
-      throw (new RuntimeException("Error deleting message", e));
+      throw new RuntimeException("Error deleting message", e);
     }
   }
 }
